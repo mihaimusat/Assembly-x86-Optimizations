@@ -1,0 +1,216 @@
+Musat Mihai-Robert 
+Grupa 323CB 
+
+==============================================Tema3 IOCLA - Code Golf==============================================
+
+Task 1 - Analiza statica si dinamica 
+-------------------------------------
+
+mystery1 - functie care afla lungimea unui sir 
+@string - adresa de inceput a sirului 
+
+La prima vedere, functia pare sa aiba un singur argument, si anume adresa de inceput a sirului, care este 
+de tipul ASCII.Aceasta idee este evidentiata prin faptul ca in label-ul mystery_l1 atunci cand se ia un 
+byte din mesaj se verifica daca s-a ajuns la finalul sirului prin intermediul instructiunii test, echivalenta cu 
+comparatia cu 0x00.In cazul in care se ajunge la terminatorul de sir, se face jump la eticheta mystery1_l2, 
+folosita pentru a restaura stiva la starea sa initiala.Daca nu am ajuns la sfarsitul sirului, inseamna ca trebuie sa 
+avansez cu indexul in sir si sa cresc contorul pentru lungimea sirului.La final, cum inca mai am de procesat string-ul 
+inseamna ca trebuie sa continui procedura decrisa in loop-ul mystery_l1 si fac salt neconditionat la aceasta eticheta.
+
+prototip: int find_len(char *string);
+
+mystery2 - functie care intoarce pozitia la care se afla un caracter dat intr-un sir dat
+@string - adresa de inceput a sirului
+@element - un caracter oarecare
+
+Initial, aceasta functie pare sa aiba un singur argument, la inceput calculandu-se lungimea sirului dat ca prim parametru.
+Insa, aceasta operatie aditionala are doar efectul de a seta contorul pentru loop-ul descris de mystery2_l1, iar functia
+are de fapt doi parametri, un sir si un caracter.In interiorul acestui loop, se ia cate un byte din string si se verifica
+daca este egal cu caracterul dat de al doilea parametru.Daca da, inseamna ca trebuie sa sar la label-ul mystery2_l2 si sa 
+afisez pozitia la care am facut match intre caracterul din sir si acest caracter, iesirea din functie facandu-se prin 
+intermediul label-ului mystery2_l3.Daca nu am gasit caracterul si am ajuns la finalul sirului, inseamna ca indexul o sa
+devina -1, dar functia va intoarce -2 deoarece o sa continue sa incrementeze contorul prin salturi la mystery2_l1.
+
+prototip: int find_pos(char *string, char element);
+
+mystery3 - functie care verifica daca primele n litere ale primului cuvant sunt identice cu primele n litere ale 
+celui de-al doilea cuvant
+@string1 - adresa primului sir 
+@string2 - adresa celui de-al doilea sir
+@length - cate litere vreau sa verific daca sunt identice
+
+Ideea acestei functii este una simpla, asfel ca in mystery3 retin parametrii in ordine: string1, string2 si n numarul 
+de litere pe care vreau sa le verific daca sunt identice.In loop-ul descris de mystery3_l1 iau cate un byte din fiecare
+string si ii verific daca sunt egali sau nu.Daca cei doi octeti difera, sar la label-ul mystery3_l2 prin care pur si simplu
+intorc 1 ca rezultat, iar daca cei doi octeti sunt la fel, avansez in ambele siruri pana cand ajung la n = 0.Daca am ajuns la
+final si am gasit ca primele n litere din cuvant sunt identice, inseamna ca pot sa intorc 0 si sa sar la mystery3_l3 prin care
+ies din functie si readuc stiva la starea initiala.
+
+prototip: int check(char *string1, char *string2, int length);
+
+mystery4 - functie care copiaza litere din al doilea sir in primul sir in limita a n caractere
+@string1 - adresa primului sir
+@string2 - adresa celui de-al doilea sir
+@length - cate litere vreau sa copiez
+
+Analog functiei anterioare, in functia mystery4, retin mai intai parametrii in ordine inversa: string1, string2 si n numarul
+maxim de caractere pe care vreau sa le copiez din string2 in string1.Ce se poate observa aici este faptul ca salvarea initiala
+a registrului ebx este inutila.Loop-ul descris de mystery4_l1 ia cate un octet de la inceputul string2 si il copiaza la inceputul
+string1 dupa care avanseaaza in ambele siruri pentru a trece la urmatorii doi octeti.Se reia acest proces pana cand ajungem cu 
+numarul de iteratii la 0, fapt evidentiat prin utilizarea instructiunii loop.La final, se iese din functie si se restaureaza stiva.
+
+prototip: void copy(char *string1, char *string2, int length);
+
+mystery5 - functie care verifica daca un caracter din sirul dat ca input este cifra
+@string - adresa de inceput a sirului
+
+La prima vedere, se pare ca aceasta functie are un singur parametru si anume, string: adresa de inceput a sirului.
+In interiorul functiei, se ia un caracter din acest sir si se verifica daca este cifra prin comparatia lui cu 
+orice valoare din intervalul 0x30...0x39, corespunzatoare codurilor in ASCII ale cifrelor din intervalul 0...9.
+Daca acest caracter se afla in afara intervalului dorit, inseamna ca intorc valoarea 0 prin salt la label-ul 
+mystery5_l1, iar in caz contrar functia intoarce 1 si la final ies din functie folosind un jmp la mystery5_l2.
+
+prototip: int is_digit(char *string);
+
+mystery6 - functie care inverseaza un sir de caractere
+@string - adresa de inceput a sirului
+
+Inca de la inceput, observam ca aceasta functie primeste un singur parametru: adresa de inceput a sirului si ca aplica 
+functia mystery1 pentru a afla lungimea acestuia deoarece aceasta va constitui numarul de iteratii pe care il va face
+loop-ul descris de mystery6_l1.In interiorul acestui label, se ia cate un octet de la finalul stringului si se copiaza 
+la adresa inceputului sirului in care vreau sa pun rezultatul, obtinand in acest fel, sirul inversat.De asemenea, 
+apelarea functiei mystery4, care are rolul de a copia primii n octeti din cel de-al doilea sir la inceputul primului sir, 
+implica intoarcerea sirului inversat prin procedura anteriora, iar la final se iese din functie si se readuce stiva la 
+starea initiala.
+
+prototip: char *reverse_string(char *string);
+
+mystery7 - functie care construieste numar cu cifrele dintr-un sir de caractere
+@string - adresa de inceput a sirului
+
+Atunci cand ne uitam prima data la aceasta functie, tindem sa credem ca ar avea mai multi parametri, insa in realitate se iau
+date aditionale de pe stiva, diferite de parametrul functiei, doar pentru a apela alte functii auxiliare.Astfel, se utilizeaza
+functia mystery1 pentru a afla lungimea sirului si totodata numarul de iteratii pentru loop-ul mystery7_l1, dar si functia mystery6
+care este folosita aici pentru a inversa sirul si pentru a putea construi numarul incepand cu cifrele de la finalul string-ului.
+In interiorul loop-ului descris de mystery7_l1 se ia cate un octet din sirul initial si se apeleaza functia mystery5 care verifica 
+daca un caracter este cifra cat timp nu am ajuns la finalul sirului.Aceasta functionalitate este evidentiata si prin faptul ca se 
+converteste valoarea caracterului din char la int prin scaderea octetului 0x30.Este important ca numarul format sa contina cifrele
+pe pozitiile de pe care au fost luate, astfel ca la fiecare pas se inmnulteste cu puterea lui 10(0xa) corespunzatoare si se creste
+contorul pentru ordinul puterii.Daca inca mai am caractere de parcurs din sirul initial, repet procedeul, iar daca am ajuns la 
+finalul sirului, inseamna ca trebuie sa ies din functie si sa intorc rezultatul acesteia prin salt neconditionat la label-ul 
+mystery7_l2.
+
+prototip: int only_digits(char *string);
+
+mystery8 - functie care verifica daca am un subsir comun de o anumita lungime pentru doua siruri date
+@string1 - adresa de inceput a primului sir
+@string2 - adresa de inceput a celui de-al doilea sir 
+@length - lungimea pe care vreau sa o aiba subsirul
+
+Observam ca in aceasta functie, avem pe langa parametrii acesteia luati de pe stiva, aflati la un offset pozitiv fata de adresa
+indicata de registrul ebp, si variabile locale, aflate la un offset negativ fata de aceasta adresa.Mai intai verificam in cadrul
+functiei mystery8_l1 daca la adresa pointer-ului pentru cel de-al doilea sir se afla o valoare mai mare fata de cea de la
+adresa unde este retinuta lungimea subsirului pe care il caut.Daca da, inseamna ca trebuie sa intorc 0 si fac jump la label-ul 
+mystery8_l2.Avansez pointer-ul pentru cel de-al doilea sir cu offset-ul dat de adresa de inceput a primului sir, si iau un octet
+de la noua adresa.Daca primul caracter de la noua adresa indicata este 0 sau 10, intorc 0.Altfel, iau cate un octet din fiecare string
+si verific daca valoarea de la adresa indicata de primul string plus lungimea data ca parametru este egala cu valoarea de la adresa 
+indicata de cel de-al doilea string.Daca obtin egalitate intre aceste doua valori, sar la label-ul mystery8_l3 si avansez pointer-ul
+pentru al doilea string.In acest mod, pot sa avansez pointerii celor doua siruri pana cand dau de un subsir comun de lungimea dorita,
+diferenta fata de functia mystery3 fiind ca subsirul poate fi gasit oriunde in interiorul sirului si nu este obligatoriu ca acele n 
+caractere identice sa se afle fix la inceputul celor doua siruri.Daca am gasit acest subsir cand am ajuns la mystery8_l4, atunci 
+inseamna ca trebuie sa intorc 1, iar daca nu, fac jump la mystery8_l6 pentru a iesi din functie si a intoarce 0.
+
+prototip: int check_substring(char *string1, char *string2, int length);
+
+mystery9 - functie care afiseaza liniile in care apare string2 in string1 prin cautarea intre index1 si index2 din string1
+@string1 - adresa primului sir
+@string2 - adresa celui de-al doilea sir
+@index1 - pozitia de la care incep cautarea in primul sir
+@index2 - pozitia pana la care caut subsirul dat de al doilea sir
+
+Analog functiilor anterioare, putem observa la prima vedere ca avem atat parametrii ai functiei, cat si variabile locale.
+De asemenea, si aici se folosesc functii ajutatoare precum mystery1 prin care aflu lungimea unui sir si implicit numarul
+de iteratii pentru loop-ul descris de mystery9_l1.In interiorul buclei, se fac aceleasi lucruri ca la functia mystery8, 
+cu exceptia ca acum nu trebuie doar sa verific daca exista string2 in string1 cautand intre cei doi indici din string1, 
+ci este necesar sa intorc liniile unde am gasit subsirul.Pentru a verifica daca am un subsir comun, se apeleaza 
+functia mystery8 discutata mai sus, care imi intoarce un rezultat de tipul true sau false, dar se retine si un pointer 
+cu care parcurg primul sir pe care il actualizez la fiecare pas in functie de adresa data de cel de-al doilea sir primit
+ca parametru.La final, intorc liniile in care se regaseste string2 ca subsir pentru string1 prin apelul functiei print_line, 
+aducerea stivei la starea initiala fiind asigurata prin intermediul functiei mystery9_l2.
+
+prototip: void find_substring(char *string1, char *string2, int index1, int index2);
+
+Dupa ce am terminat de analizat functiile mystery folosind objdump, am inceput sa ma uit si la celelalte functii si am 
+observat urmatoarele lucruri: 
+- daca executabilul nu primeste niciun argument, atunci va afisa orice input va primi de la 
+tastatura, folosind functiile do_simple_echo(si implicit do_read)
+- inputul poate fi citit si dintr-un fisier text, fapt evidentiat prin existenta unor functii precum do_open(pentru deschiderea
+de fisiere), read_from_file(pentru citirea din fisier), do_close(pentru inchiderea unui fisier), insa output-ul va fi afisat mereu 
+in linia de comanda, prin intermediul functiei do_write
+- programul poate primi si unele argumente atunci cand este rulat: 
+	-f string => va afisa sirul introdus doar daca acesta contine string-ul dat ca parametru
+	-s index1 => poate fi folosit doar in conjunctie cu -f deoarece nu produce niciun rezultat atunci cand e introdus singur
+		   => are semnificatia ca incepe cautarea lui string incepand de la pozitia data de index1, si doar daca se afla
+		      dupa aceasta pozitie, va face afisarea sirului introdus de la tastatura
+	-e index2 => poate fi folosit in conjunctie cu -f, dar si cu -s, si de asemenea nu poate fi folosit ca singur argument
+		  => atunci cand e folosit doar cu -f, are semnificatia ca string-ul dat ca parametru este cautat doar pana in 
+		     pozitia data de index2, si doar atunci va face afisarea sirului introdus de la tastatura
+		  => atunci cand e folosit atat cu -f, cat si cu -s, cautarea sirului dat ca parametru se face intre index1 
+		     si index2, si doar atunci va face afisarea sirului introdus de la tastatura
+	-i input_file => acest argument poate fi folosit atat singur, caz in care va afisa in terminal sirul introdus in 
+			 fisierul input_file, dar si impreuna cu celelalte trei argumente de mai sus, caz in care va face 
+			 o cautare a sirului dat parametru in sirul dat din fisierul de input, prin parcurgerea lui intre
+			 index1 si index2
+
+Task 2 si Task 3 - Optimizare spatiu si timp
+---------------------------------------------
+
+Pentru optimizarea functiei mystery1, am observat ca se comporta la fel ca strlen, asa ca am decis sa scriu de la 0 aceasta functie
+deoarece am facut acest exercitiu si la laborator.Pentru a optimiza atat din punct de vedere al vitezei, cat si al spatiului, m-am 
+gandit sa nu folosesc niciun jump in cadrul functiei, ci sa am tot codul intr-un singur bloc.Asfel, functia se executa liniar si nu
+se mai pierde timp(in special) pentru a sari intre diferite puncte ale functiei.
+
+Pentru optimizarea functiei mystery2, am observat ca aceasta este de fapt functia strchr din C, si am incercat si aici sa scriu codul 
+de la 0 deoarece erau mult prea multe detalii redundante, precum utilizarea functiei mystery1 pentru determinarea lungimii sirului.
+Chiar daca din punct de vedere al timpului de executie al programului nu s-au produs schimbari semnificative prin rescrierea codului,
+din punct de vedere al spatiului, programul este imbunatatit deoarece nu am mai pus parametrii pe stiva pentru apelul functiei mystery1
+si am redus numarul de registri folositi.
+
+La functia mystery3, echivalenta cu functia strchr din C, nu am optimizat nimic, deoarece mi se pare realizata destul de eficient, 
+si nu cred(sau cel putin nu imi dau seama) de cum s-ar putea face si mai rapid si folosind memorie mai putina.Se poate optimiza prin utilizarea add in loc de inc si a sub in loc de dec, sau se pot scoate registrii de la inceputul functiei mystery3_l1 atunci cand se 
+face cmp intre cate doi octeti din fiecare string, insa aceste modificari nu aduc schimbari semnificative din punct de vedere al celor 
+doua caracteristici analizate ale programului.
+
+Analog, la functia mystery4, am considerat ca nu se pot face imbunatatiri semnificative din punct de vedere al performantei si doar
+am schimbat putin loop-ul astfel incat sa il scriu echivalent folosind jnz deoarece utilizarea unui salt conditionat este mai rapida
+decat folosirea instructiunii loop.Ca si functionalitate, functia este echivalenta cu strncpy din C, si din punct de vedere spatial se 
+poate optimiza folosid rep movsb, care realizeaza un transfer byte cu byte din sursa in destinatie.Insa, aceasta modificare nu este 
+eficienta si din punct de vedere spatial.
+
+Functia mystery5 este mult prea scurta si mult prea simpla pentru a ii putea gasi o optimizare.M-am gandit mai mult timp
+la ce as putea modifica astfel incat macar din punct de vedere al timpului, sa pot produce un cod mai rapid, insa nu 
+am gasit nimic deoarece toate acele cmp-uri utilizate sunt necesare pentru a verifica daca un caracter este cifra.
+
+Pentru optimizarea functiei mystery6, echivalenta cu functia strrev din C, m-am gandit ca o posibila optimizare atat din punct de 
+vedere al spatiului, cat si al timpului ar fi sa nu mai pun parametrii pe stiva pentru apelarea functiei mystery1, ci doar sa scriu 
+direct functia  cu sirul pe care il primesc ca parametru.De asemenea, nu am mai folosit functia mystery4 pentru ca in programul 
+initial, crearea unei copii a sirului era inutila, si am echivalat instructiunea loop cu jnz deoarece este mai rapida si genereaza 
+un cod mai scurt.
+
+Pentru optimizarea functiei mystery7, am ales sa o rescriu de la 0, deoarece mi se pareau mult prea multe lucruri inutile in functia 
+data in scheletul de cod.Am construit numarul cu cifrele din sirul dat ca input, folosind un loop in care am luat cate un caracter 
+din sir, l-am trasformat in cifra scazand 0x30, adica codul ASCII corespunzator lui 0, iar apoi am inmultit succesiv cu puteri ale 
+lui 10 fiecare caracter obtinut pentru a obtine numarul final.In functia initiala, nu doar ca programul facea mai multe salturi, 
+ceea ce incetinea programul, dar si din punct de vedere al memoriei, programul dat in schelet nu era foarte eficient datorita numarului 
+mare de operatii de tip push/pop pentru registre si pentru apelul functiilor mystery1 si mystery6.
+
+Pentru optimizarea functiei mystery8, am observat ca aceasta seamana din punct de vedere al functionalitatii cu functia strstr din C,
+si am incercat sa o scriu de la 0, deoarece mi s-a parut destul de complicata implementarea data in scheletul de cod.Initial, apelarea 
+functiei mystery1 pentru a afla lungimea sirului si a functiei mystery8, pentru a afla daca cele doua siruri au un subsir comun de o 
+lungime data, precum si utilizarea unor variabile locale faceau codul sa fie nu doar ineficient, dar si greu de inteles.Astfel, am redus
+numarul de etichete la care functia sare, si am facut codul mult mai compact si mai usor de inteles. 
+
+Pentru optimizarea functiei mystery9, am ales sa modific codul dat in scheletul de cod eliminand anumite instructiuni redundante precum
+luarea din memorie de mai multe ori a aceleiasi variabile, sau a instructiei setne si a unui test pe un caracter din sirul eax, desi 
+se facea deja pe tot sirul.Astfel, atat codul generat a fost mai mic, cat si timpul de executie al functiei.
+
